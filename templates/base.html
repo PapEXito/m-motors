@@ -1,0 +1,60 @@
+{# load static = obligatoire pour utiliser {% static %} dans le template #}
+{# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#std-templatetag-load #}
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {# block "title" override par chaque page enfant via {% extends %} "M-Motors" sert juste de fallback #}
+    {# https://docs.djangoproject.com/en/6.0/ref/templates/language/#template-inheritance #}
+
+    <title>{% block title %}M-Motors{% endblock %}</title>
+
+    {# preconnect pour shave 100-200ms sur le 1er chargement des Google Fonts #}
+    {# https://developer.mozilla.org/docs/Web/HTML/Attributes/rel/preconnect #}
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+    {# ?v=N = cache-buster, à bumper à chaque modif du CSS pour forcer le rafraîchissement navigateur #}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=6">
+</head>
+<body class="page">
+<nav class="topnav">
+    <div>
+        <a class="topnav-brand" href="{% url 'home' %}">M-Motors</a>
+        <div class="topnav-links">
+            <a class="topnav-link" href="{% url 'vehicles:search' %}">Catalogue</a>
+            {% if user.is_authenticated %}
+                <a class="topnav-link" href="{% url 'accounts:dashboard' %}">Mon espace</a>
+
+                {# logout en POST (pas en lien GET) depuis Django5 c'est obligatoire pour LogoutView d'après la doc #}
+                {# https://docs.djangoproject.com/en/6.0/topics/auth/default/#django.contrib.auth.views.LogoutView #}
+
+                <form method="post" action="{% url 'accounts:logout' %}">
+                    {% csrf_token %}
+                    <button class="topnav-logout" type="submit">Déconnexion</button>
+                </form>
+            {% else %}
+                <a class="topnav-link" href="{% url 'accounts:login' %}">Connexion</a>
+                <a class="topnav-link" href="{% url 'accounts:register' %}">Inscription</a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<main class="site-main">
+
+    {# framework messages de Django flash messages oneshot au display#}
+    {# https://docs.djangoproject.com/en/6.0/ref/contrib/messages/ #}
+
+    {% if messages %}{% for message in messages %}<div class="flash">{{ message }}</div>{% endfor %}{% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">© M-Motors — Vente et location longue durée.</footer>
+</body>
+</html>

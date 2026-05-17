@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Catalogue — M-Motors{% endblock %}
+{% block content %}
+<div class="catalog">
+    <aside class="filters">
+        <h2 class="filters-title">Filtres</h2>
+        <form method="get" class="filters-form">
+            <input type="text" name="q" value="{{ params.q|default:'' }}" class="filters-input" placeholder="Modèle...">
+
+            <select name="mode" class="filters-select">
+                <option value="">Achat & Location</option>
+                {% for value, label in modes %}
+                    <option value="{{ value }}" {% if params.mode == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            {# stringformat:'s' pour comparer params.marque (string venue de url) avec m.id (int) #}
+            {# sans ça la comparaison échoue et le option n'est jamais présélect #}
+            {# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#stringformat #}
+
+            <select name="marque" class="filters-select">
+                <option value="">Toutes marques</option>
+                {% for m in marques %}
+                    <option value="{{ m.id }}" {% if params.marque == m.id|stringformat:'s' %}selected{% endif %}>{{ m.nom }}</option>
+                {% endfor %}
+            </select>
+
+            <select name="motorisation" class="filters-select">
+                <option value="">Toutes motorisations</option>
+                {% for value, label in motorisations %}
+                    <option value="{{ value }}" {% if params.motorisation == value %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="number" name="prix_max" value="{{ params.prix_max|default:'' }}" class="filters-input" placeholder="Prix max">
+            <input type="number" name="km_max" value="{{ params.km_max|default:'' }}" class="filters-input" placeholder="Km max">
+
+            <button type="submit" class="filters-apply">Filtrer</button>
+            <a href="{% url 'vehicles:search' %}" class="filters-reset">Réinitialiser</a>
+        </form>
+    </aside>
+
+    <section class="cars">
+        {# filtre pluralize ajoute le "s" si le count != 1 (gère 0, 1 et n) #}
+        {# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#pluralize #}
+
+        <h1 class="cars-title">{{ vehicules|length }} véhicule{{ vehicules|length|pluralize }}</h1>
+        <div class="cars-grid">
+            {% for v in vehicules %}
+                <div class="car">
+
+                    {# loading="lazy" = images chargées au scroll #}
+                    {# https://developer.mozilla.org/docs/Web/HTML/Element/img#loading #}
+
+                    {% if v.image_slug %}
+                        <img src="{% static 'imgs/' %}{{ v.image_slug }}/1.png" class="car-img" alt="{{ v.nom_complet }}" loading="lazy">
+                    {% elif v.photo %}
+                        <img src="{{ v.photo.url }}" class="car-img" alt="{{ v.marque }} {{ v.modele }}">
+                    {% endif %}
+                    <div class="car-body">
+
+                        {# get_<field>_display() = Django génère ce getter pour les fields à choix #}
+                        {# https://docs.djangoproject.com/en/6.0/ref/models/instances/#django.db.models.Model.get_FOO_display #}
+
+                        <span class="car-mode {% if v.mode == 'location' %}car-mode--location{% endif %}">{{ v.get_mode_display }}</span>
+                        <h2 class="car-name">{{ v.marque }} {{ v.modele }}</h2>
+                        <p class="car-meta">{{ v.annee }} · {{ v.kilometrage }} km · {{ v.get_motorisation_display }}{% if v.boite %} · {{ v.boite }}{% endif %}</p>
+                        <p class="car-price">{{ v.prix_affiche }}</p>
+                        <a class="car-view" href="{% url 'vehicles:detail' v.pk %}">Voir le véhicule</a>
+                    </div>
+                </div>
+
+            {#  empty  = fallback natif quand la boucle ne tourne pas, plus propre qu'un if #}
+            {# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#for-empty #}
+
+            {% empty %}
+                <p class="cars-empty">Aucun véhicule correspond à vos critères.</p>
+            {% endfor %}
+        </div>
+
+    </section>
+</div>
+{% endblock %}

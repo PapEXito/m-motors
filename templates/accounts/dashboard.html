@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Mon espace — M-Motors{% endblock %}
+{% block content %}
+{# user.username dispo direct dans tous les templates via le context processor `auth` via config/settings.py #}
+{# https://docs.djangoproject.com/en/6.0/ref/templates/api/#django.contrib.auth.context_processors.auth #}
+{# filtre date au format fr (d/m/Y) https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#date #}
+<h1 class="dash-title">Bienvenue {{ user.username }}</h1>
+
+<h2 class="dash-section">Dossiers d'achat</h2>
+{% if dossiers_achat %}
+<table class="dash-table">
+    <thead><tr><th>#</th><th>Véhicule</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+    <tbody>{% for d in dossiers_achat %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.vehicule }}</td>
+            <td><span class="dossier-status dossier-status--{{ d.statut }}">{{ d.get_statut_display }}</span></td>
+            <td>{{ d.created_at|date:"d/m/Y" }}</td>
+            <td><a class="dash-detail" href="{% url 'dossiers:detail' 'achat' d.id %}">Détails</a></td>
+        </tr>
+    {% endfor %}</tbody>
+</table>
+{% else %}<p class="dash-empty">Aucun dossier d'achat.</p>{% endif %}
+
+<h2 class="dash-section">Dossiers de location</h2>
+{% if dossiers_location %}
+<table class="dash-table">
+    <thead><tr><th>#</th><th>Véhicule</th><th>Durée</th><th>Statut</th><th>Date</th><th></th></tr></thead>
+    <tbody>{% for d in dossiers_location %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.vehicule }}</td>
+            <td>{{ d.get_duree_mois_display }}</td>
+            <td><span class="dossier-status dossier-status--{{ d.statut }}">{{ d.get_statut_display }}</span></td>
+            <td>{{ d.created_at|date:"d/m/Y" }}</td>
+            <td><a class="dash-detail" href="{% url 'dossiers:detail' 'location' d.id %}">Détails</a></td>
+        </tr>
+    {% endfor %}</tbody>
+</table>
+{% else %}<p class="dash-empty">Aucun dossier de location.</p>{% endif %}
+<a class="dash-cta" href="{% url 'vehicles:search' %}">Parcourir le catalogue</a>
+{% endblock %}

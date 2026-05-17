@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+    <h1 class="hero-title">M-Motors</h1>
+    <p class="hero-text">Achetez ou louez votre prochain véhicule d'occasion certifié.</p>
+    <a class="hero-buy" href="{% url 'vehicles:search' %}?mode=achat">Acheter</a>
+    <a class="hero-rent" href="{% url 'vehicles:search' %}?mode=location">Louer (LLD)</a>
+</section>
+
+<div class="features">
+    <div class="feature"><h2 class="feature-title">Catalogue varié</h2><p>Toutes marques et motorisations.</p></div>
+    <div class="feature"><h2 class="feature-title">Location longue durée</h2><p>Choisissez la durée et les options.</p></div>
+    <div class="feature"><h2 class="feature-title">Dossier en ligne</h2><p>Déposez vos documents et suivez le statut.</p></div>
+</div>
+{% endblock %}

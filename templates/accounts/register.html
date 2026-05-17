@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Inscription — M-Motors{% endblock %}
+
+{% block content %}
+<div class="auth"><div class="auth-box">
+    <h1 class="auth-title">Créer mon compte</h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="auth-submit">S'inscrire</button>
+    </form>
+    <p class="auth-alt">Déjà un compte ? <a href="{% url 'accounts:login' %}">Se connecter</a></p>
+</div></div>
+{% endblock %}

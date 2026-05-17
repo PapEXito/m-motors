@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtualenv
+venv/
+.venv/
+
+# Django
+db.sqlite3
+media/
+staticfiles/
+
+# Environment
+.env
+
+# IDE
+.vscode/
+.idea/
+.DS_Store
+
+# Tests
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Fichiers non nécessaires au déploiement en ligne
+*.md
+*.pdf
+M-Motors-*.html
+start.bat
+pytest.ini
+LOGS.txt

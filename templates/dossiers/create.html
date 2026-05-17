@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ titre }} — M-Motors{% endblock %}
+{% block content %}
+{# enctype="multipart/form-data" indispensable dès qu'on upload un fichier sinon request.FILES est vide #}
+{# https://docs.djangoproject.com/en/6.0/topics/http/file-uploads/ #}
+<div class="form-wrap">
+    <h1>{{ titre }}</h1>
+    <div class="form-info">Véhicule : <strong>{{ vehicule }}</strong> — {{ vehicule.prix_affiche }}</div>
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="form-submit">Déposer mon dossier</button>
+    </form>
+</div>
+{% endblock %}

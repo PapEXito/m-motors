@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ vehicule.marque }} {{ vehicule.modele }} — M-Motors{% endblock %}
+{% block content %}
+<div class="vd-page">
+  <div class="vd-wrap">
+
+    {# 1re image en eager , les 2 autres en lazy pour ne pas bloquer le render #}
+    {# https://developer.mozilla.org/docs/Web/Performance/Lazy_loading #}
+    {% if vehicule.image_slug %}
+    <div class="vd-imgs">
+      <img src="{% static 'imgs/' %}{{ vehicule.image_slug }}/1.png" class="vd-img" alt="{{ vehicule.marque }} {{ vehicule.modele }}" loading="eager">
+      <img src="{% static 'imgs/' %}{{ vehicule.image_slug }}/2.png" class="vd-img" alt="" loading="lazy">
+      <img src="{% static 'imgs/' %}{{ vehicule.image_slug }}/3.png" class="vd-img" alt="" loading="lazy">
+    </div>
+    {% elif vehicule.photo %}
+    <div class="vd-imgs vd-imgs--solo">
+      <img src="{{ vehicule.photo.url }}" class="vd-img" alt="{{ vehicule.marque }} {{ vehicule.modele }}">
+    </div>
+    {% endif %}
+
+    <div class="vd-card">
+      <div class="vd-card-head">
+        <div>
+          <h1 class="vd-title">{{ vehicule.marque }} {{ vehicule.modele }}</h1>
+          <p class="vd-sub">{{ vehicule.nom_complet }}</p>
+        </div>
+        <span class="vd-price">{{ vehicule.prix_affiche }}</span>
+      </div>
+
+      <table class="vd-table">
+        <tbody>
+          <tr><th>Année</th><td>{{ vehicule.annee }}</td></tr>
+          <tr><th>Kilométrage</th><td>{{ vehicule.kilometrage }} km</td></tr>
+          <tr><th>Énergie</th><td>{{ vehicule.get_motorisation_display }}</td></tr>
+          {% if vehicule.boite %}<tr><th>Boîte</th><td>{{ vehicule.boite }}</td></tr>{% endif %}
+          {% if vehicule.portes %}<tr><th>Portes</th><td>{{ vehicule.portes }}</td></tr>{% endif %}
+          {% if vehicule.puissance_fiscale %}<tr><th>Puissance fiscale</th><td>{{ vehicule.puissance_fiscale }}</td></tr>{% endif %}
+          {% if vehicule.puissance_din %}<tr><th>Puissance DIN</th><td>{{ vehicule.puissance_din }}</td></tr>{% endif %}
+          {% if vehicule.consommation %}<tr><th>Consommation</th><td>{{ vehicule.consommation }}</td></tr>{% endif %}
+        </tbody>
+      </table>
+
+      <div class="vd-actions">
+        {% if vehicule.mode == 'achat' %}
+          <a class="detail-cta" href="{% url 'dossiers:create' 'achat' vehicule.id %}">Démarrer un dossier d'achat</a>
+        {% else %}
+          <a class="detail-cta" href="{% url 'dossiers:create' 'location' vehicule.id %}">Demander une location</a>
+        {% endif %}
+        <a class="vd-back" href="{% url 'vehicles:search' %}">← Retour au catalogue</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

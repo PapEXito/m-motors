@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Dossier #{{ dossier.id }} — M-Motors{% endblock %}
+{% block content %}
+{# capfirst met juste la 1re lettre en majuscule (≠ title qui capitalise chaque mot) #}
+{# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#capfirst #}
+<h1>Dossier {{ type_dossier|capfirst }} #{{ dossier.id }}</h1>
+<dl class="dossier-list">
+    <dt class="dossier-label">Véhicule</dt>
+    <dd class="dossier-value">{{ dossier.vehicule }} — {{ dossier.vehicule.prix_affiche }}</dd>
+    <dt class="dossier-label">Statut</dt>
+    <dd class="dossier-value"><span class="dossier-status dossier-status--{{ dossier.statut }}">{{ dossier.get_statut_display }}</span></dd>
+
+    <dt class="dossier-label">Date de dépôt</dt>
+    <dd class="dossier-value">{{ dossier.created_at|date:"d/m/Y H:i" }}</dd>
+
+    {# yesno = filtre pratique pour transformer un bool en libellé#}
+    {# https://docs.djangoproject.com/en/6.0/ref/templates/builtins/#yesno #}
+    {% if type_dossier == "achat" %}
+        <dt class="dossier-label">Reprise véhicule</dt>
+        <dd class="dossier-value">{{ dossier.reprise_vehicule|yesno:"Oui,Non" }}</dd>
+    {% else %}
+        <dt class="dossier-label">Durée</dt>
+        <dd class="dossier-value">{{ dossier.get_duree_mois_display }}</dd>
+        <dt class="dossier-label">Loyer estimé</dt>
+        <dd class="dossier-value">{{ dossier.loyer_total }} € / mois</dd>
+        <dt class="dossier-label">Options</dt>
+        <dd class="dossier-value">
+            {% if dossier.assurance %}<span class="dossier-opt">Assurance</span>{% endif %}
+            {% if dossier.entretien %}<span class="dossier-opt">Entretien</span>{% endif %}
+        </dd>
+    {% endif %}
+</dl>
+{% if user.is_staff %}
+<form method="post" class="admin-actions">
+    {% csrf_token %}
+    <button name="statut" value="en_traitement" class="btn-traitement">Traitement</button>
+    <button name="statut" value="valide" class="btn-valider">Valider</button>
+    <button name="statut" value="refuse" class="btn-refus">Refus</button>
+</form>
+{% endif %}
+<a class="dossier-back" href="{% url 'accounts:dashboard' %}">← Retour à mon espace</a>
+{% endblock %}

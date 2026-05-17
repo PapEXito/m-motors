@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Connexion — M-Motors{% endblock %}
+
+{% block content %}
+
+{# novalidate = on désactive la validation HTML5 pour que Django gérer les erreurs côté serv#}
+{# csrf_token obligatoire sur tout POST sinon Django renvoie 403 #}
+{# https://docs.djangoproject.com/en/6.0/topics/forms/#form-rendering-options #}
+{# https://docs.djangoproject.com/en/6.0/ref/csrf/ #}
+<div class="auth"><div class="auth-box">
+    <h1 class="auth-title">Connexion</h1>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if form.errors %}<div class="auth-error">Identifiants invalides.</div>{% endif %}
+        <button type="submit" class="auth-submit">Se connecter</button>
+    </form>
+    <p class="auth-alt">Pas de compte ? <a href="{% url 'accounts:register' %}">S'inscrire</a></p>
+</div></div>
+{% endblock %}
