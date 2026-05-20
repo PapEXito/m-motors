@@ -16,6 +16,10 @@ Application Django de vente et location longue durée (LLD) de véhicules d'occa
 
 ## Lancement local
 
+**Option rapide (Windows) :** double-cliquer sur `start.bat` — crée le venv, installe les dépendances, migre, seed, ouvre le navigateur.
+
+**Option manuelle :**
+
 ```bash
 python -m venv venv
 venv\Scripts\activate
