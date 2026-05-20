@@ -6,12 +6,18 @@ Application Django de vente et location longue durée (LLD) de véhicules d'occa
 ## Stack
 
 - Django 5 / Python 3.12+
-- SQLite (zéro config)
+- **PostgreSQL** (production via `DATABASE_URL`) · SQLite (développement local uniquement)
+- `dj-database-url` — parsing de l'URL de connexion
 - WhiteNoise (fichiers statiques)
 - Gunicorn (serveur WSGI prod)
 - Pillow (uploads images)
+- pytest + pytest-django (tests unitaires + fonctionnels)
 
 ## Lancement local
+
+**Option rapide (Windows) :** double-cliquer sur `start.bat` — crée le venv, installe les dépendances, migre, seed, ouvre le navigateur.
+
+**Option manuelle :**
 
 ```bash
 python -m venv venv
@@ -23,6 +29,16 @@ python manage.py runserver
 ```
 
 Site : http://127.0.0.1:8000 — Admin Django : `/admin/`
+
+## Tests
+
+```bash
+# Tests unitaires + fonctionnels (28 tests au total)
+python -m pytest -v
+
+# Tests fonctionnels uniquement
+python -m pytest tests_fonctionnels.py -v
+```
 
 ## Comptes de test (autogen)
 
@@ -61,26 +77,24 @@ railway.json    startCommand prod (migrate + seed + collectstatic + gunicorn)
 
 ## Variables d'environnement
 
-Voir `.env.example`. En prod :
+Voir `.env.example`. En prod (5 variables obligatoires) :
 
 ```
 SECRET_KEY=<clé aléatoire 50+ caractères>
 DEBUG=False
 ALLOWED_HOSTS=.railway.app
 CSRF_TRUSTED_ORIGINS=https://*.railway.app
+DATABASE_URL=postgresql://user:password@host:5432/dbname
 ```
 
 ## Déploiement Railway
 
 1. Push sur GitHub
 2. Railway → New → Deploy from GitHub repo → sélectionner le repo
-3. Variables → Raw Editor → coller les 4 variables ci-dessus
-4. Settings → Networking → Generate Domain
-5. Deployments → Redeploy
+3. Railway → + Add → Database → Add PostgreSQL (génère `DATABASE_URL` automatiquement)
+4. Variables → Raw Editor → ajouter les 4 autres variables (SECRET_KEY, DEBUG, ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS)
+5. Settings → Networking → Generate Domain
+6. Deployments → Redeploy
 
-Le `railway.json` chaîne `migrate → seed_data → collectstatic → gunicorn` à chaque démarrage
-
-## Notes
-
-- Le filesystem Railway est éphémère : SQLite est wipée à chaque redeploy, le seed réinjecte la démo à chaque démarrage
-- Pour de la persistance réelle, brancher PostgreSQL via `DATABASE_URL` + `dj-database-url`
+Le `railway.json` chaîne `migrate → seed_data → collectstatic → gunicorn` à chaque démarrage.
+La base PostgreSQL Railway est persistante entre les redeploys (contrairement à SQLite).
