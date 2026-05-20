@@ -5,6 +5,7 @@ lu par manage.py et wsgi.py au start, réf par toutes les app AUTH_USER_MODEL, S
 """
 import os
 from pathlib import Path
+import dj_database_url
 
 # https://github.com/django/djangoproject.com/tree/main/djangoproject/settings
 
@@ -71,11 +72,14 @@ TEMPLATES = [
     },
 ]
 
+# PostgreSQL en production (via DATABASE_URL injecté par Railway).
+# SQLite uniquement en développement local si DATABASE_URL n'est pas défini.
+# https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.config(
+        default=f"sqlite:///{BASE_DIR}/db.sqlite3",
+        conn_max_age=600,
+    )
 }
 
 AUTH_PASSWORD_VALIDATORS = []
