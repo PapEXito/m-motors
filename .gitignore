@@ -24,6 +24,10 @@ staticfiles/
 .coverage
 htmlcov/
 
+# Logs runtime
+logs/
+*.log
+
 # Artefacts de build locaux
 M-Motors-*.html
 LOGS.txt
