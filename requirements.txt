@@ -6,3 +6,4 @@ psycopg2-binary>=2.9
 dj-database-url>=2.0
 pytest>=8.0
 pytest-django>=4.8
+sentry-sdk[django]>=2.0
